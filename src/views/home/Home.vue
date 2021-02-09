@@ -7,6 +7,8 @@
   <recommend :recommend="recommend"></recommend>
   
   <feature-view/>
+  <tab-control :titles="['流行','新品','热卖']" @tabclick="tabclick"></tab-control>
+  <goods-list :goods="goods[currentType].list"></goods-list>
 </div>
  
 </template>
@@ -20,10 +22,16 @@ import {getHomeMultiData,getGoodsData} from 'network/home.js'
 import NavBar from 'components/common/navbar/NavBar'
 
 
+//业务通用组件
+import TabControl from '../../components/content/tabControl/TabControl.vue'
+
+
 //页面子组件导入
 import HomeSwiper from './childComps/HomeSwiper'
 import Recommend from './childComps/Recommend'
 import FeatureView from './childComps/FeatureView'
+import GoodsList from '../../components/content/goods/goodsList.vue'
+
 
 export default {
   name:'Home',
@@ -31,7 +39,9 @@ export default {
     NavBar,
     HomeSwiper,
     Recommend,
-    FeatureView
+    FeatureView,
+    TabControl,
+    GoodsList,
   },
   data(){
     return{
@@ -39,25 +49,60 @@ export default {
      recommend:[],
      goods:{
        'pop':{page:0,list:[]},
-       'news':{page:0,list:[]},
+       'new':{page:0,list:[]},
        'sell':{page:0,list:[]}
-     }
+     },
+     //默认传递的商品列表是流行
+     currentType:'pop'
     }
   },
  created(){
    
    //请求首页的多个数据
-   getHomeMultiData().then(res => {
-     this.recommend = res.data.recommend.list
-     this.banner = res.data.banner.list
-    //  console.log(this.banner);
-    //  console.log(res.data);
-   })
+   this.getHomeMultiData();
    
    //请求商品数据
-   getGoodsData('pop',1).then(res => {
-     console.log(res);
+   this.getGoodsData('pop');
+   this.getGoodsData('new');
+   this.getGoodsData('sell');
+  
+ },
+ methods:{
+   /**
+    * 事件监听相关
+    */
+   tabclick(index) {
+     switch(index){
+       case 0:
+         this.currentType = 'pop'
+         break
+       case 1:
+         this.currentType = 'new'
+         break
+       case 2:
+         this.currentType = 'sell'
+         break
+     }
+     console.log(this.currentType);
+   },
+
+   /**
+    * 网络请求相关
+    */
+   getHomeMultiData(){
+      getHomeMultiData().then(res => {
+     this.recommend = res.data.recommend.list
+     this.banner = res.data.banner.list
    })
+   },
+   getGoodsData(type){
+     const page = this.goods[type].page + 1;
+     getGoodsData(type,page).then(res => {
+    //  console.log(res.data.list);
+     this.goods[type].list.push(...res.data.list)
+     this.goods[type].page += 1
+   })
+   }
  }
 }
 
@@ -78,6 +123,5 @@ export default {
   .home-swiper{
     margin-top: 44px;
   }
-
 
 </style>
