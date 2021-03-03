@@ -2,7 +2,7 @@
   <swiper>
    <swiper-item v-for="(item,index) in banner" :key="index">
      <a :href="item.link">
-       <img :src="item.image"/>
+       <img :src="item.image" @load="isimgLoad"/>
      </a>
    </swiper-item>
  </swiper>
@@ -16,6 +16,11 @@ export default {
     Swiper,
     SwiperItem
   },
+  data(){
+    return {
+      isload:false
+    }
+  },
   props:{
     banner:{
       type:Array,
@@ -23,6 +28,14 @@ export default {
       default(){
         return []
       }
+    }
+  },
+  methods:{
+    isimgLoad() {
+      // 这里是一个很好的小技巧，避免多次发送事件
+      if(!this.isload)
+      this.$emit("isimgLoad")
+      this.isload = true
     }
   }
 }

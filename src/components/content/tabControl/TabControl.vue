@@ -28,6 +28,7 @@ export default {
   methods:{
     getStyle(index){
       this.currentIndex = index
+      //将子组件的事件传递出去
       this.$emit('tabclick',index)
     }
   }

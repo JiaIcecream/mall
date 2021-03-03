@@ -1,7 +1,8 @@
 <template>
-  <div id="goods-list-item">
-    <a :href="item.link">
-      <img :src="item.show.img" />
+  <div id="goods-list-item" @click="toDetail">
+    <!-- item.link -->
+    <a href="javascript:;">
+      <img :src="item.show.img" @load="isimgLoad"/>
       <div class="goods-info">
         <p>{{ item.title }}</p>
         <span class="price">{{ item.price }}</span>
@@ -23,8 +24,25 @@ export default {
     },
   },
   created() {
-    // console.log(this.item);
+    
   },
+  mounted() {
+    
+  },
+  methods:{
+    isimgLoad(){
+      // 因为goodsListItem和home是非父子组件，所有使用事件总线,但是打印this.$bus发现是不存在的，
+      // 所以我们需要使用原型,在main.js文件中通过 Vue.prototype.$bus = new Vue() 创建，那么就可以使用这个vue对象发送事件
+      this.$bus.$emit('isimgLoad')
+      // console.log('加载完成');
+    },
+    // 监听对商品的点击跳转到商品详情页
+    toDetail() {
+      // console.log(this.item);
+      this.$router.push('/detail/' + this.item.iid)
+    }
+
+  }
 };
 </script>
 
