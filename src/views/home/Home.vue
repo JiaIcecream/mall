@@ -148,7 +148,6 @@ export default {
     // 防抖函数
     debounce(func, delay) {
       let timer = null;
-
       return function (...argus) {
         if (timer) clearTimeout(timer);
         timer = setTimeout(() => {
@@ -197,6 +196,8 @@ export default {
       getHomeMultiData().then((res) => {
         this.recommend = res.data.recommend.list;
         this.banner = res.data.banner.list;
+      }).catch(error =>{
+        console.log('获取失败');
       });
     },
     getGoodsData(type) {
@@ -206,6 +207,8 @@ export default {
         this.goods[type].page += 1;
         // 再次可以上拉加载更多
         this.$refs.scroll.finishPullUp();
+      }).catch(err =>{
+        console.log('获取失败');
       });
     },
   },
